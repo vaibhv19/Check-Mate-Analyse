@@ -7,6 +7,10 @@ import { getActiveFen } from './context/selectors';
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
 import { getOpeningByFen } from './utils/ecoDatabase';
 import StatusBar from './components/layout/StatusBar';
+import LandingForm from './features/pgn/LandingForm';
+import { parsePgn } from './utils/pgnParser';
+import { validatePgnSyntax, checkMoveLegality } from './utils/pgnValidator';
+
 function Workbench() {
   const state = useWorkbenchState();
   const dispatch = useWorkbenchDispatch();
@@ -15,6 +19,51 @@ function Workbench() {
   const activeOpening = getOpeningByFen(activeFen);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [pgnError, setPgnError] = useState<string | null>(null);
+  const [syntaxErrors, setSyntaxErrors] = useState<string[]>([]);
+
+  const handleLoadPgn = (pgnText: string) => {
+    setPgnError(null);
+    setSyntaxErrors([]);
+
+    const syntaxValidation = validatePgnSyntax(pgnText);
+    if (syntaxValidation.length > 0) {
+      setSyntaxErrors(syntaxValidation.map(e => `Line ${e.line || '?'}: ${e.message}`));
+      return;
+    }
+
+    const legalityCheck = checkMoveLegality(pgnText);
+    if (legalityCheck) {
+      setPgnError(legalityCheck.message);
+      return;
+    }
+
+    try {
+      const parsedGame = parsePgn(pgnText);
+      dispatch({
+        type: 'LOAD_GAME',
+        payload: {
+          headers: parsedGame.headers,
+          moves: parsedGame.moves,
+        },
+      });
+    } catch (err) {
+      setPgnError(err instanceof Error ? err.message : 'Unknown parsing error');
+    }
+  };
+
+  const handleLoadSample = () => {
+    const samplePgn = `[Event "F/S Return Match"]
+[Site "Belgrade, Serbia JUG"]
+[Date "1992.11.04"]
+[Round "29"]
+[White "Fischer, Robert J."]
+[Black "Spassky, Boris V."]
+[Result "1/2-1/2"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7 1/2-1/2`;
+    handleLoadPgn(samplePgn);
+  };
 
   // Determine bounds based on Sandbox or Main Game state
   const isSandbox = state.isSandbox;
@@ -107,6 +156,17 @@ function Workbench() {
       nps={state.engineNps}
     />
   );
+
+  if (state.moves.length === 0) {
+    return (
+      <LandingForm
+        onLoadPgn={handleLoadPgn}
+        onLoadSample={handleLoadSample}
+        error={pgnError}
+        syntaxErrors={syntaxErrors}
+      />
+    );
+  }
 
   return (
     <WorkbenchLayout
