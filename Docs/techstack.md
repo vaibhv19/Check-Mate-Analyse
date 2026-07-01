@@ -102,7 +102,7 @@ No backend required.
 | GitHub | Repository Hosting |
 | ESLint | Code Quality |
 | Prettier | Code Formatting |
-| VS Code | Development Environment |
+| Anti-gravity | Development Environment |
 
 ---
 
