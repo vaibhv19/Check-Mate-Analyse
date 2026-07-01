@@ -7,7 +7,6 @@ import { getActiveFen } from './context/selectors';
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
 import { getOpeningByFen } from './utils/ecoDatabase';
 import StatusBar from './components/layout/StatusBar';
-
 function Workbench() {
   const state = useWorkbenchState();
   const dispatch = useWorkbenchDispatch();
