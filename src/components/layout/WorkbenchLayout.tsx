@@ -1,4 +1,5 @@
 import React from 'react';
+import StatusBar from './StatusBar';
 
 interface WorkbenchLayoutProps {
   boardContent?: React.ReactNode;
@@ -96,13 +97,8 @@ export default function WorkbenchLayout({
       </main>
 
       {/* Footer Status Bar */}
-      <footer className="h-8 shrink-0 border-t border-border bg-card px-6 flex items-center justify-between text-xs text-muted-foreground">
-        {statusBarContent || (
-          <>
-            <div>Status: Awaiting PGN Input</div>
-            <div>Nodes/s: 0 • Depth: 0/15</div>
-          </>
-        )}
+      <footer className="h-8 shrink-0 border-t border-border bg-card">
+        {statusBarContent || <StatusBar />}
       </footer>
     </div>
   );
