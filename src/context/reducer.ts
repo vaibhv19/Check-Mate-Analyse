@@ -1,4 +1,4 @@
-import { WorkbenchState, GameHeader, MoveEntry, MoveEvaluation, ClassificationType } from '../types/state';
+import type { WorkbenchState, GameHeader, MoveEntry, MoveEvaluation, ClassificationType } from '../types/state';
 
 export type WorkbenchAction =
   | { type: 'LOAD_GAME'; payload: { headers: GameHeader; moves: MoveEntry[] } }
