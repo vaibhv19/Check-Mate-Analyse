@@ -16,9 +16,9 @@ export default function WorkbenchLayout({
   statusBarContent,
 }: WorkbenchLayoutProps) {
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground">
+    <div className="flex h-screen w-screen flex-col overflow-y-auto md:overflow-hidden bg-background text-foreground">
       {/* Header Bar */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-6">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4 md:px-6">
         <div className="flex items-center gap-3">
           <span className="text-xl font-bold tracking-tight text-primary">CheckMate Analyze</span>
           <span className="rounded-full bg-accent/20 px-2.5 py-0.5 text-xs font-medium text-accent">
@@ -34,13 +34,13 @@ export default function WorkbenchLayout({
       </header>
 
       {/* Main Grid Workspace */}
-      <main className="flex-1 overflow-hidden p-6">
-        <div className="grid h-full w-full grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
+      <main className="flex-1 overflow-y-auto md:overflow-hidden p-4 md:p-6">
+        <div className="grid w-full gap-4 md:gap-6 md:h-full grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
           
           {/* Column 1 & 2: Chessboard & Analytics (occupies 3 columns on large screens) */}
-          <div className="flex flex-col gap-6 md:col-span-2 lg:col-span-3 overflow-hidden">
+          <div className="flex flex-col gap-4 md:gap-6 md:col-span-2 lg:col-span-3 md:overflow-hidden">
             {/* Chessboard & Controls Container */}
-            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-border bg-card p-6 shadow-sm overflow-hidden">
+            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-border bg-card p-4 md:p-6 shadow-sm min-h-[420px] md:min-h-0 md:overflow-hidden">
               {boardContent || (
                 <div className="flex flex-col items-center justify-center gap-4 text-center h-full w-full">
                   <div className="aspect-square w-full max-w-[480px] rounded-lg border-2 border-dashed border-muted bg-muted/20 flex items-center justify-center text-muted-foreground">
@@ -54,7 +54,7 @@ export default function WorkbenchLayout({
             </div>
 
             {/* Evaluation Graph / Engine stats Section */}
-            <div className="h-48 shrink-0 rounded-xl border border-border bg-card p-4 shadow-sm overflow-hidden flex flex-col">
+            <div className="h-48 shrink-0 rounded-xl border border-border bg-card p-4 shadow-sm md:overflow-hidden flex flex-col">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 Evaluation Curve
               </h3>
@@ -65,9 +65,9 @@ export default function WorkbenchLayout({
           </div>
 
           {/* Column 3: Move List Panel & Engine info */}
-          <div className="flex flex-col gap-6 md:col-span-1 overflow-hidden">
+          <div className="flex flex-col gap-4 md:gap-6 md:col-span-1 md:overflow-hidden">
             {/* Move List Container */}
-            <div className="flex-1 flex flex-col rounded-xl border border-border bg-card p-4 shadow-sm overflow-hidden">
+            <div className="h-80 md:h-full flex-1 flex flex-col rounded-xl border border-border bg-card p-4 shadow-sm md:overflow-hidden">
               <h3 className="text-sm font-semibold border-b border-border pb-2 mb-2 flex items-center justify-between">
                 <span>Move Log</span>
                 <span className="text-xs text-muted-foreground font-normal">0 Plies</span>
@@ -78,7 +78,7 @@ export default function WorkbenchLayout({
             </div>
 
             {/* Engine Analysis Panel */}
-            <div className="h-48 shrink-0 flex flex-col rounded-xl border border-border bg-card p-4 shadow-sm overflow-hidden">
+            <div className="h-48 shrink-0 flex flex-col rounded-xl border border-border bg-card p-4 shadow-sm md:overflow-hidden">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 Engine Recommendations (Multi-PV)
               </h3>
