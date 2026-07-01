@@ -1,5 +1,6 @@
 import { Chessboard } from 'react-chessboard';
 import type { ChessboardOptions } from 'react-chessboard';
+import { STARTING_FEN } from '../../types/state';
 
 interface ChessboardContainerProps {
   position?: string;
@@ -9,7 +10,7 @@ interface ChessboardContainerProps {
 }
 
 export default function ChessboardContainer({
-  position = 'start',
+  position = STARTING_FEN,
   orientation = 'white',
   onPieceDrop,
   arePiecesDraggable = true,

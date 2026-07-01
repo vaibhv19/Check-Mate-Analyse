@@ -1,4 +1,5 @@
 import type { WorkbenchState } from '../types/state';
+import { STARTING_FEN } from '../types/state';
 
 /**
  * Resolves the active board FEN based on the current navigation index
@@ -13,12 +14,12 @@ export function getActiveFen(state: WorkbenchState): string {
     if (state.activeMoveIndex >= 0 && state.moves[state.activeMoveIndex]) {
       return state.moves[state.activeMoveIndex].fen;
     }
-    return state.headers?.FEN || 'start';
+    return state.headers?.FEN || STARTING_FEN;
   }
 
   if (state.activeMoveIndex >= 0 && state.moves[state.activeMoveIndex]) {
     return state.moves[state.activeMoveIndex].fen;
   }
 
-  return state.headers?.FEN || 'start';
+  return state.headers?.FEN || STARTING_FEN;
 }
