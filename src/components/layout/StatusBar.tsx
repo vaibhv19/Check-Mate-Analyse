@@ -4,6 +4,8 @@ interface StatusBarProps {
   maxDepth?: number;
   nps?: number;
   gameLoaded?: boolean;
+  openingName?: string;
+  ecoCode?: string;
 }
 
 export default function StatusBar({
@@ -12,19 +14,31 @@ export default function StatusBar({
   maxDepth = 15,
   nps = 0,
   gameLoaded = false,
+  openingName,
+  ecoCode,
 }: StatusBarProps) {
   const formattedNps = nps > 1000 ? `${(nps / 1000).toFixed(1)}k` : nps;
 
   return (
     <div className="flex h-full w-full items-center justify-between px-4 text-xs font-medium text-muted-foreground transition-all">
-      {/* Left section: Game Load status indicator */}
-      <div className="flex items-center gap-2">
+      {/* Left section: Game Load status indicator and Openings */}
+      <div className="flex items-center gap-2 overflow-hidden flex-1 mr-4">
         <span
-          className={`h-2.5 w-2.5 rounded-full transition-all ${
+          className={`h-2.5 w-2.5 rounded-full transition-all shrink-0 ${
             gameLoaded ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-500'
           }`}
         ></span>
-        <span className="truncate max-w-[200px] sm:max-w-xs">{statusText}</span>
+        <span className="truncate max-w-[200px] sm:max-w-xs shrink-0">{statusText}</span>
+        {openingName && (
+          <span className="truncate border-l border-border pl-2 text-foreground font-semibold flex items-center gap-1.5 min-w-0">
+            {ecoCode && (
+              <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded text-muted-foreground uppercase font-mono tracking-wider">
+                {ecoCode}
+              </span>
+            )}
+            <span className="truncate">{openingName}</span>
+          </span>
+        )}
       </div>
 
       {/* Right section: Engine statistics */}

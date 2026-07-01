@@ -5,11 +5,15 @@ import ChessboardContainer from './features/board/ChessboardContainer';
 import BoardControls from './features/board/BoardControls';
 import { getActiveFen } from './context/selectors';
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
+import { getOpeningByFen } from './utils/ecoDatabase';
+import StatusBar from './components/layout/StatusBar';
 
 function Workbench() {
   const state = useWorkbenchState();
   const dispatch = useWorkbenchDispatch();
   const activeFen = getActiveFen(state);
+  
+  const activeOpening = getOpeningByFen(activeFen);
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -67,24 +71,48 @@ function Workbench() {
   });
 
   const boardContent = (
-    <div className="flex flex-col items-center justify-center gap-4 text-center h-full w-full">
-      <ChessboardContainer position={activeFen} />
-      <BoardControls
-        onFirst={handleFirst}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        onLast={handleLast}
-        onPlayToggle={handlePlayToggle}
-        isPlaying={isPlaying}
-        isFirstDisabled={isFirstDisabled}
-        isLastDisabled={isLastDisabled}
-      />
+    <div className="flex flex-col items-center justify-center gap-4 text-center h-full w-full min-h-0">
+      <div className="flex-1 min-h-0 w-full flex items-center justify-center">
+        <ChessboardContainer position={activeFen} />
+      </div>
+      <div className="shrink-0 w-full flex justify-center">
+        <BoardControls
+          onFirst={handleFirst}
+          onPrev={handlePrev}
+          onNext={handleNext}
+          onLast={handleLast}
+          onPlayToggle={handlePlayToggle}
+          isPlaying={isPlaying}
+          isFirstDisabled={isFirstDisabled}
+          isLastDisabled={isLastDisabled}
+        />
+      </div>
     </div>
+  );
+
+  const statusBarContent = (
+    <StatusBar
+      gameLoaded={state.moves.length > 0}
+      statusText={
+        isSandbox
+          ? `Exploring Sandbox Variation (${state.sandboxMoves.length} moves)`
+          : state.headers?.white && state.headers?.black
+          ? `${state.headers.white} vs ${state.headers.black}`
+          : state.moves.length > 0
+          ? `Reviewing loaded game (${currentIndex + 1}/${state.moves.length} plies)`
+          : 'Awaiting PGN Input'
+      }
+      openingName={activeOpening?.name}
+      ecoCode={activeOpening?.eco}
+      engineDepth={state.engineDepth}
+      nps={state.engineNps}
+    />
   );
 
   return (
     <WorkbenchLayout
       boardContent={boardContent}
+      statusBarContent={statusBarContent}
     />
   );
 }

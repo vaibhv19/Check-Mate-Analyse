@@ -31,8 +31,8 @@ export default function ChessboardContainer({
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center p-2">
-      <div className="w-full max-w-[480px] aspect-square flex items-center justify-center">
+    <div className="w-full h-full flex items-center justify-center p-2 min-h-0">
+      <div className="h-full w-auto max-h-full max-w-[min(100%,480px)] aspect-square flex items-center justify-center min-h-0 min-w-0">
         <Chessboard options={boardOptions} />
       </div>
     </div>
