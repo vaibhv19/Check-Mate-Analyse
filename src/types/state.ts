@@ -1,15 +1,16 @@
 export const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 export interface GameHeader {
-  event?: string;
-  site?: string;
-  date?: string;
-  round?: string;
-  white?: string;
-  black?: string;
-  result?: string;
-  eco?: string;
-  opening?: string;
+  Event?: string;
+  Site?: string;
+  Date?: string;
+  Round?: string;
+  White?: string;
+  Black?: string;
+  Result?: string;
+  ECO?: string;
+  Opening?: string;
+  FEN?: string;
   [key: string]: string | undefined;
 }
 

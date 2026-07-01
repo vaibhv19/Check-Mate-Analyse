@@ -1,5 +1,6 @@
 import React from 'react';
 import StatusBar from './StatusBar';
+import { useWorkbenchState } from '../../context/WorkbenchContext';
 
 interface WorkbenchLayoutProps {
   boardContent?: React.ReactNode;
@@ -16,6 +17,9 @@ export default function WorkbenchLayout({
   engineContent,
   statusBarContent,
 }: WorkbenchLayoutProps) {
+  const state = useWorkbenchState();
+  const pliesCount = state.isSandbox ? state.sandboxMoves.length : state.moves.length;
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-y-auto md:overflow-hidden bg-background text-foreground">
       {/* Header Bar */}
@@ -71,7 +75,9 @@ export default function WorkbenchLayout({
             <div className="h-80 md:h-full flex-1 flex flex-col rounded-xl border border-border bg-card p-4 shadow-sm md:overflow-hidden">
               <h3 className="text-sm font-semibold border-b border-border pb-2 mb-2 flex items-center justify-between">
                 <span>Move Log</span>
-                <span className="text-xs text-muted-foreground font-normal">0 Plies</span>
+                <span className="text-xs text-muted-foreground font-normal">
+                  {pliesCount} {pliesCount === 1 ? 'Ply' : 'Plies'}
+                </span>
               </h3>
               <div className="flex-1 overflow-y-auto rounded-lg border border-dashed border-muted bg-muted/10 flex items-center justify-center text-xs text-muted-foreground p-4">
                 {moveListContent || "No Game Loaded. Paste PGN to get started."}

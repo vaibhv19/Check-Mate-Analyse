@@ -138,14 +138,64 @@ function Workbench() {
     </div>
   );
 
+  const moveListContent = state.moves.length > 0 ? (
+    <div className="w-full h-full flex flex-col font-mono text-xs overflow-hidden min-h-0 min-w-0">
+      <div className="grid grid-cols-12 gap-1 py-1 border-b border-border/20 text-muted-foreground font-semibold shrink-0">
+        <div className="col-span-2">#</div>
+        <div className="col-span-5 text-left">White</div>
+        <div className="col-span-5 text-left">Black</div>
+      </div>
+      <div className="flex-1 overflow-y-auto min-h-0 min-w-0 py-1 divide-y divide-border/10">
+        {Array.from({ length: Math.ceil(state.moves.length / 2) }).map((_, turnIdx) => {
+          const whiteMove = state.moves[turnIdx * 2];
+          const blackMove = state.moves[turnIdx * 2 + 1];
+          
+          return (
+            <div key={turnIdx} className="grid grid-cols-12 gap-1 py-1 items-center hover:bg-muted/10 transition-all px-0.5">
+              <div className="col-span-2 text-muted-foreground font-medium">{turnIdx + 1}.</div>
+              
+              {/* White Move */}
+              <button
+                onClick={() => dispatch({ type: 'SELECT_MOVE', payload: turnIdx * 2 })}
+                className={`col-span-5 text-left px-2 py-0.5 rounded transition-all truncate font-medium cursor-pointer ${
+                  currentIndex === turnIdx * 2
+                    ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                    : 'text-foreground hover:bg-muted/40'
+                }`}
+              >
+                {whiteMove.san}
+              </button>
+              
+              {/* Black Move */}
+              {blackMove ? (
+                <button
+                  onClick={() => dispatch({ type: 'SELECT_MOVE', payload: turnIdx * 2 + 1 })}
+                  className={`col-span-5 text-left px-2 py-0.5 rounded transition-all truncate font-medium cursor-pointer ${
+                    currentIndex === turnIdx * 2 + 1
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                      : 'text-foreground hover:bg-muted/40'
+                  }`}
+                >
+                  {blackMove.san}
+                </button>
+              ) : (
+                <div className="col-span-5" />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  ) : undefined;
+
   const statusBarContent = (
     <StatusBar
       gameLoaded={state.moves.length > 0}
       statusText={
         isSandbox
           ? `Exploring Sandbox Variation (${state.sandboxMoves.length} moves)`
-          : state.headers?.white && state.headers?.black
-          ? `${state.headers.white} vs ${state.headers.black}`
+          : state.headers?.White && state.headers?.Black
+          ? `${state.headers.White} vs ${state.headers.Black}`
           : state.moves.length > 0
           ? `Reviewing loaded game (${currentIndex + 1}/${state.moves.length} plies)`
           : 'Awaiting PGN Input'
@@ -171,6 +221,7 @@ function Workbench() {
   return (
     <WorkbenchLayout
       boardContent={boardContent}
+      moveListContent={moveListContent}
       statusBarContent={statusBarContent}
     />
   );
