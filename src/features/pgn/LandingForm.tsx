@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Upload, Clipboard, Play, AlertCircle } from 'lucide-react';
+import { Upload, Clipboard, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ParserExceptionBanner from './ParserExceptionBanner';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface LandingFormProps {
@@ -151,21 +152,7 @@ export default function LandingForm({
           </div>
 
           {/* Validation Error Banner */}
-          {(error || syntaxErrors.length > 0) && (
-            <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3.5 flex items-start gap-2.5 text-destructive animate-in slide-in-from-top-2 duration-200">
-              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
-              <div className="text-xs space-y-1">
-                <p className="font-semibold">{error || 'Syntax errors detected:'}</p>
-                {syntaxErrors.length > 0 && (
-                  <ul className="list-disc pl-4 space-y-0.5">
-                    {syntaxErrors.map((err, idx) => (
-                      <li key={idx}>{err}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          )}
+          <ParserExceptionBanner error={error} syntaxErrors={syntaxErrors} />
         </CardContent>
 
         <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border pt-4 bg-muted/20 rounded-b-xl">
