@@ -3,6 +3,7 @@ import { WorkbenchProvider, useWorkbenchState, useWorkbenchDispatch } from './co
 import ChessboardContainer from './features/board/ChessboardContainer';
 import BoardControls from './features/board/BoardControls';
 import { getActiveFen } from './context/selectors';
+import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
 
 function Workbench() {
   const state = useWorkbenchState();
@@ -36,6 +37,12 @@ function Workbench() {
   const handlePlayToggle = () => {
     // Placeholder for Auto-play toggles (TS-3.2.4)
   };
+
+  useKeyboardNavigation({
+    onPrev: handlePrev,
+    onNext: handleNext,
+    enabled: true,
+  });
 
   const boardContent = (
     <div className="flex flex-col items-center justify-center gap-4 text-center h-full w-full">
