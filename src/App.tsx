@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import WorkbenchLayout from './components/layout/WorkbenchLayout';
 import { WorkbenchProvider, useWorkbenchState, useWorkbenchDispatch } from './context/WorkbenchContext';
 import ChessboardContainer from './features/board/ChessboardContainer';
@@ -10,6 +11,8 @@ function Workbench() {
   const dispatch = useWorkbenchDispatch();
   const activeFen = getActiveFen(state);
 
+  const [isPlaying, setIsPlaying] = useState(false);
+
   // Determine bounds based on Sandbox or Main Game state
   const isSandbox = state.isSandbox;
   const movesLength = isSandbox ? state.sandboxMoves.length : state.moves.length;
@@ -19,10 +22,12 @@ function Workbench() {
   const isLastDisabled = currentIndex === movesLength - 1 || movesLength === 0;
 
   const handleFirst = () => {
+    setIsPlaying(false);
     dispatch({ type: 'SELECT_MOVE', payload: -1 });
   };
 
   const handlePrev = () => {
+    setIsPlaying(false);
     dispatch({ type: 'SELECT_MOVE', payload: Math.max(-1, currentIndex - 1) });
   };
 
@@ -31,12 +36,29 @@ function Workbench() {
   };
 
   const handleLast = () => {
+    setIsPlaying(false);
     dispatch({ type: 'SELECT_MOVE', payload: movesLength - 1 });
   };
 
   const handlePlayToggle = () => {
-    // Placeholder for Auto-play toggles (TS-3.2.4)
+    if (isLastDisabled && !isPlaying) return;
+    setIsPlaying(!isPlaying);
   };
+
+  // Autoplay effect
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const timer = setTimeout(() => {
+      if (currentIndex >= movesLength - 1) {
+        setIsPlaying(false);
+      } else {
+        dispatch({ type: 'SELECT_MOVE', payload: currentIndex + 1 });
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [isPlaying, currentIndex, movesLength, dispatch]);
 
   useKeyboardNavigation({
     onPrev: handlePrev,
@@ -53,7 +75,7 @@ function Workbench() {
         onNext={handleNext}
         onLast={handleLast}
         onPlayToggle={handlePlayToggle}
-        isPlaying={false}
+        isPlaying={isPlaying}
         isFirstDisabled={isFirstDisabled}
         isLastDisabled={isLastDisabled}
       />
