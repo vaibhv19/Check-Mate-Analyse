@@ -1,4 +1,4 @@
-import { ChevronsLeft, ChevronLeft, Play, Pause, ChevronRight, ChevronsRight } from 'lucide-react';
+import { ChevronsLeft, ChevronLeft, Play, Pause, ChevronRight, ChevronsRight, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface BoardControlsProps {
@@ -10,6 +10,7 @@ interface BoardControlsProps {
   isPlaying: boolean;
   isFirstDisabled?: boolean;
   isLastDisabled?: boolean;
+  onExport?: () => void;
 }
 
 export default function BoardControls({
@@ -21,9 +22,10 @@ export default function BoardControls({
   isPlaying,
   isFirstDisabled = false,
   isLastDisabled = false,
+  onExport,
 }: BoardControlsProps) {
   return (
-    <div className="flex items-center justify-center gap-1.5 py-2 w-full max-w-[480px]">
+    <div className="flex items-center justify-center gap-1.5 py-2 w-full max-w-[480px] relative">
       {/* First Move */}
       <Button
         variant="ghost"
@@ -82,6 +84,19 @@ export default function BoardControls({
       >
         <ChevronsRight className="h-5 w-5" />
       </Button>
+
+      {/* Export PGN */}
+      {onExport && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onExport}
+          title="Export Annotated PGN"
+          className="h-9 w-9 text-muted-foreground hover:text-foreground absolute right-0"
+        >
+          <Download className="h-4.5 w-4.5" />
+        </Button>
+      )}
     </div>
   );
 }

@@ -18,6 +18,8 @@ import ClassificationBadge from './features/classification/ClassificationBadge';
 import EvaluationGraph from './features/graph/EvaluationGraph';
 import { Chess } from 'chess.js';
 import SandboxBanner from './features/sandbox/SandboxBanner';
+import { generateAnnotatedPgn, getExportFilename } from './utils/pgnExporter';
+import ExportConfirmDialog from './features/pgn/ExportConfirmDialog';
 
 function Workbench() {
   const state = useWorkbenchState();
@@ -30,6 +32,7 @@ function Workbench() {
   const [pgnError, setPgnError] = useState<string | null>(null);
   const [syntaxErrors, setSyntaxErrors] = useState<string[]>([]);
   const [isEngineEnabled, setIsEngineEnabled] = useState(true);
+  const [isExportConfirmOpen, setIsExportConfirmOpen] = useState(false);
 
   const engineRef = useRef<StockfishClient | null>(null);
   const activeIndexRef = useRef(state.activeMoveIndex);
@@ -199,6 +202,32 @@ function Workbench() {
     }
   };
 
+  const unevaluatedCount = state.moves.filter(m => !m.evaluation).length;
+
+  const handleExportClick = () => {
+    if (unevaluatedCount > 0) {
+      setIsExportConfirmOpen(true);
+    } else {
+      triggerPgnDownload();
+    }
+  };
+
+  const triggerPgnDownload = () => {
+    const pgnText = generateAnnotatedPgn(state.headers, state.moves);
+    const filename = getExportFilename(state.headers);
+    
+    const blob = new Blob([pgnText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setIsExportConfirmOpen(false);
+  };
+
   const handleLoadPgn = (pgnText: string) => {
     setPgnError(null);
     setSyntaxErrors([]);
@@ -319,6 +348,7 @@ function Workbench() {
           isPlaying={isPlaying}
           isFirstDisabled={isFirstDisabled}
           isLastDisabled={isLastDisabled}
+          onExport={handleExportClick}
         />
       </div>
     </div>
@@ -416,13 +446,21 @@ function Workbench() {
   }
 
   return (
-    <WorkbenchLayout
-      boardContent={boardContent}
-      moveListContent={moveListContent}
-      graphContent={<EvaluationGraph />}
-      engineContent={<EnginePanel />}
-      statusBarContent={statusBarContent}
-    />
+    <>
+      <WorkbenchLayout
+        boardContent={boardContent}
+        moveListContent={moveListContent}
+        graphContent={<EvaluationGraph />}
+        engineContent={<EnginePanel />}
+        statusBarContent={statusBarContent}
+      />
+      <ExportConfirmDialog
+        isOpen={isExportConfirmOpen}
+        onClose={() => setIsExportConfirmOpen(false)}
+        onConfirm={triggerPgnDownload}
+        unevaluatedCount={unevaluatedCount}
+      />
+    </>
   );
 }
 
