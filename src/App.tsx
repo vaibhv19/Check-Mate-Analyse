@@ -15,6 +15,7 @@ import type { MoveEvaluation, MoveEntry } from './types/state';
 import EnginePanel from './features/engine/EnginePanel';
 import { classifyMoveEntry } from './utils/moveClassifier';
 import ClassificationBadge from './features/classification/ClassificationBadge';
+import EvaluationGraph from './features/graph/EvaluationGraph';
 
 function Workbench() {
   const state = useWorkbenchState();
@@ -354,6 +355,7 @@ function Workbench() {
     <WorkbenchLayout
       boardContent={boardContent}
       moveListContent={moveListContent}
+      graphContent={<EvaluationGraph />}
       engineContent={<EnginePanel />}
       statusBarContent={statusBarContent}
     />
