@@ -1,4 +1,5 @@
 # Tech Stack
+
 ## CheckMate Analyze
 
 **Project:** CheckMate Analyze  
@@ -36,38 +37,38 @@ Every technology should solve a real problem. Avoid unnecessary dependencies.
 
 # Frontend
 
-| Technology | Purpose | Why Chosen |
-|------------|---------|------------|
-| React | User Interface | Component-based architecture ideal for interactive applications |
-| TypeScript | Programming Language | Type safety and maintainability |
-| Vite | Build Tool | Extremely fast development and production builds |
-| Tailwind CSS | Styling | Rapid UI development with consistent styling |
-| shadcn/ui | UI Components | Accessible, customizable, modern components |
+| Technology   | Purpose              | Why Chosen                                                      |
+| ------------ | -------------------- | --------------------------------------------------------------- |
+| React        | User Interface       | Component-based architecture ideal for interactive applications |
+| TypeScript   | Programming Language | Type safety and maintainability                                 |
+| Vite         | Build Tool           | Extremely fast development and production builds                |
+| Tailwind CSS | Styling              | Rapid UI development with consistent styling                    |
+| shadcn/ui    | UI Components        | Accessible, customizable, modern components                     |
 
 ---
 
 # Chess Libraries
 
-| Technology | Purpose | Why Chosen |
-|------------|---------|------------|
-| chess.js | Chess rules, legal moves, PGN parsing | Battle-tested library with excellent API |
-| react-chessboard | Interactive chessboard | Modern, customizable chessboard component |
+| Technology       | Purpose                               | Why Chosen                                |
+| ---------------- | ------------------------------------- | ----------------------------------------- |
+| chess.js         | Chess rules, legal moves, PGN parsing | Battle-tested library with excellent API  |
+| react-chessboard | Interactive chessboard                | Modern, customizable chessboard component |
 
 ---
 
 # Chess Engine
 
-| Technology | Purpose | Why Chosen |
-|------------|---------|------------|
+| Technology              | Purpose             | Why Chosen                                                                                |
+| ----------------------- | ------------------- | ----------------------------------------------------------------------------------------- |
 | Stockfish (WebAssembly) | Position evaluation | Industry-standard open-source chess engine capable of running entirely inside the browser |
 
 ---
 
 # Visualization
 
-| Technology | Purpose | Why Chosen |
-|------------|---------|------------|
-| Recharts | Evaluation Graph | Lightweight, responsive, React-friendly charts |
+| Technology | Purpose          | Why Chosen                                     |
+| ---------- | ---------------- | ---------------------------------------------- |
+| Recharts   | Evaluation Graph | Lightweight, responsive, React-friendly charts |
 
 ---
 
@@ -96,30 +97,30 @@ No backend required.
 
 # Development Tools
 
-| Tool | Purpose |
-|------|---------|
-| Git | Version Control |
-| GitHub | Repository Hosting |
-| ESLint | Code Quality |
-| Prettier | Code Formatting |
+| Tool         | Purpose                 |
+| ------------ | ----------------------- |
+| Git          | Version Control         |
+| GitHub       | Repository Hosting      |
+| ESLint       | Code Quality            |
+| Prettier     | Code Formatting         |
 | Anti-gravity | Development Environment |
 
 ---
 
 # Testing
 
-| Tool | Purpose |
-|------|---------|
-| Vitest | Unit Testing |
+| Tool                  | Purpose           |
+| --------------------- | ----------------- |
+| Vitest                | Unit Testing      |
 | React Testing Library | Component Testing |
 
 ---
 
 # Deployment
 
-| Technology | Purpose |
-|------------|---------|
-| Vercel | Frontend Hosting |
+| Technology | Purpose          |
+| ---------- | ---------------- |
+| Vercel     | Frontend Hosting |
 
 Deployment strategy:
 

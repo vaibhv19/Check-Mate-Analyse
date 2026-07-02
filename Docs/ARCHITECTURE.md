@@ -9,7 +9,7 @@
 
 ## 1. Architecture Overview
 
-CheckMate Analyze is a **Local-First Analysis Workbench**. The architecture is designed to transform the web browser from a simple rendering engine into a high-performance execution environment for chess analysis. 
+CheckMate Analyze is a **Local-First Analysis Workbench**. The architecture is designed to transform the web browser from a simple rendering engine into a high-performance execution environment for chess analysis.
 
 The system follows a "PGN as Source, Engine as Compiler" metaphor. The architecture prioritizes **computational isolation**, ensuring that intensive analysis tasks do not interfere with user interface responsiveness. By maintaining a stateless, client-side-only footprint, the architecture ensures maximum privacy and zero operational overhead.
 
@@ -68,31 +68,38 @@ The system is organized into four primary layers: **Interface**, **Orchestration
 ## 4. Component Responsibilities
 
 ### 4.1 Interface Layer
-*   **Board Component:** Renders the 8x8 grid and handles move inputs (drag-and-drop or click).
-*   **Analytics Components:** Visual representation of engine data (Move List annotations and Evaluation Graph).
-*   **Workbench UI:** Manages layout and high-level user triggers (Reset, Export).
+
+- **Board Component:** Renders the 8x8 grid and handles move inputs (drag-and-drop or click).
+- **Analytics Components:** Visual representation of engine data (Move List annotations and Evaluation Graph).
+- **Workbench UI:** Manages layout and high-level user triggers (Reset, Export).
 
 ### 4.2 Workbench Controller (The Orchestrator)
+
 The central hub of the application. It listens for events from the Interface (e.g., "Move Clicked"), queries the Domain Logic for validity, requests analysis from the Orchestrator, and updates the Transient State.
 
 ### 4.3 Domain Logic (The Rules Engine)
+
 The implementation of the Laws of Chess. It is responsible for move validation, position generation (FEN), and game-over detection. It is completely agnostic of the UI and the Analysis Engine.
 
 ### 4.4 Analysis Orchestrator
-Manages the lifecycle of the chess engine. 
-*   Starts/Stops analysis tasks.
-*   Handles "Multi-PV" (multiple lines) requests.
-*   Translates raw engine output into the system’s internal Evaluation data entity.
+
+Manages the lifecycle of the chess engine.
+
+- Starts/Stops analysis tasks.
+- Handles "Multi-PV" (multiple lines) requests.
+- Translates raw engine output into the system’s internal Evaluation data entity.
 
 ### 4.5 Provider Services
-*   **PGN Utility:** Converts raw text/files into structured game objects and vice-versa.
-*   **Metadata Provider:** Performs lookups against a local database for Opening names (ECO).
+
+- **PGN Utility:** Converts raw text/files into structured game objects and vice-versa.
+- **Metadata Provider:** Performs lookups against a local database for Opening names (ECO).
 
 ---
 
 ## 5. Data Flow
 
 ### 5.1 Ingestion Flow
+
 1.  **User** provides PGN string.
 2.  **PGN Utility** parses text into a **Game Entity**.
 3.  **Workbench Controller** validates the game against the **Rules Engine**.
@@ -100,6 +107,7 @@ Manages the lifecycle of the chess engine.
 5.  **Analysis Orchestrator** is triggered for the first move.
 
 ### 5.2 Analysis Feedback Loop (Progressive)
+
 1.  **Analysis Orchestrator** broadcasts periodic updates.
 2.  **Workbench Controller** receives evaluation scores.
 3.  **State Manager** enriches the specific **Move Entity** with analysis data.
@@ -109,11 +117,11 @@ Manages the lifecycle of the chess engine.
 
 ## 6. State Management
 
-The application maintains a **Stateless/Transient State**. 
+The application maintains a **Stateless/Transient State**.
 
-*   **Game State:** An immutable list of moves and headers.
-*   **Analysis State:** A mapping of move indices to their respective engine evaluations, classifications, and candidate lines.
-*   **UI State:** Current move index, active sandbox variations, and visibility toggles.
+- **Game State:** An immutable list of moves and headers.
+- **Analysis State:** A mapping of move indices to their respective engine evaluations, classifications, and candidate lines.
+- **UI State:** Current move index, active sandbox variations, and visibility toggles.
 
 State is kept entirely in memory. To preserve the "Local-First" principle, any refresh of the browser environment clears the state, effectively resetting the workbench.
 
@@ -121,9 +129,9 @@ State is kept entirely in memory. To preserve the "Local-First" principle, any r
 
 ## 7. Module Boundaries
 
-*   **Logical Isolation:** The **Analysis Engine** must run in a separate execution context from the **UI/Rules Engine**. Communication between them occurs via a message-passing interface to prevent main-thread blocking.
-*   **Dependency Direction:** Higher-level components (UI) depend on the Orchestrator, but the Domain Logic (Rules Engine) must have zero dependencies on the UI or Analysis layers.
-*   **Privacy Wall:** No component is permitted to initiate external network requests once the application has been initialized.
+- **Logical Isolation:** The **Analysis Engine** must run in a separate execution context from the **UI/Rules Engine**. Communication between them occurs via a message-passing interface to prevent main-thread blocking.
+- **Dependency Direction:** Higher-level components (UI) depend on the Orchestrator, but the Domain Logic (Rules Engine) must have zero dependencies on the UI or Analysis layers.
+- **Privacy Wall:** No component is permitted to initiate external network requests once the application has been initialized.
 
 ---
 
@@ -142,21 +150,21 @@ Errors follow a "Bubble-Up and Notify" strategy:
 
 The architecture is designed to accommodate the following v2.0 enhancements without structural refactoring:
 
-*   **Cloud Persistence Layer:** A new "Persistence Provider" can be injected into the Workbench Controller to mirror the local state to a remote database.
-*   **AI Insight Layer:** A post-processing module that consumes the Analysis State to generate natural language explanations.
-*   **Collaborative Sessions:** A communication module using peer-to-peer protocols to sync the State between two clients.
+- **Cloud Persistence Layer:** A new "Persistence Provider" can be injected into the Workbench Controller to mirror the local state to a remote database.
+- **AI Insight Layer:** A post-processing module that consumes the Analysis State to generate natural language explanations.
+- **Collaborative Sessions:** A communication module using peer-to-peer protocols to sync the State between two clients.
 
 ---
 
 ## 10. Architecture Decision Summary
 
-| Decision | Impact | Rationale |
-| :--- | :--- | :--- |
-| **Separated Computation** | Performance | Prevents CPU-heavy analysis from freezing the UI. |
-| **Client-side Parsing** | Privacy/Cost | Zero data leaves the device; zero server costs. |
-| **Stateless Workbench** | Complexity | Simplifies the data model by avoiding database synchronization. |
-| **Immutable Game Record** | Reliability | Ensures "What-If" exploration never corrupts the source data. |
-| **Unidirectional Flow** | Maintenance | Makes state changes predictable and easier to debug. |
+| Decision                  | Impact       | Rationale                                                       |
+| :------------------------ | :----------- | :-------------------------------------------------------------- |
+| **Separated Computation** | Performance  | Prevents CPU-heavy analysis from freezing the UI.               |
+| **Client-side Parsing**   | Privacy/Cost | Zero data leaves the device; zero server costs.                 |
+| **Stateless Workbench**   | Complexity   | Simplifies the data model by avoiding database synchronization. |
+| **Immutable Game Record** | Reliability  | Ensures "What-If" exploration never corrupts the source data.   |
+| **Unidirectional Flow**   | Maintenance  | Makes state changes predictable and easier to debug.            |
 
 ---
 
