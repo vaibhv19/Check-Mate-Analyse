@@ -1,6 +1,7 @@
 import React from 'react';
 import StatusBar from './StatusBar';
 import { useWorkbenchState } from '../../context/WorkbenchContext';
+import { HelpCircle } from 'lucide-react';
 
 interface WorkbenchLayoutProps {
   boardContent?: React.ReactNode;
@@ -8,6 +9,7 @@ interface WorkbenchLayoutProps {
   graphContent?: React.ReactNode;
   engineContent?: React.ReactNode;
   statusBarContent?: React.ReactNode;
+  onOpenShortcuts?: () => void;
 }
 
 export default function WorkbenchLayout({
@@ -16,6 +18,7 @@ export default function WorkbenchLayout({
   graphContent,
   engineContent,
   statusBarContent,
+  onOpenShortcuts,
 }: WorkbenchLayoutProps) {
   const state = useWorkbenchState();
   const pliesCount = state.isSandbox ? state.sandboxMoves.length : state.moves.length;
@@ -31,10 +34,19 @@ export default function WorkbenchLayout({
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mr-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Local Engine Ready</span>
           </div>
+          {onOpenShortcuts && (
+            <button
+              onClick={onOpenShortcuts}
+              title="Keyboard Shortcuts Guide (H)"
+              className="p-1.5 rounded-lg border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all cursor-pointer flex items-center justify-center shrink-0"
+            >
+              <HelpCircle className="h-4.5 w-4.5" />
+            </button>
+          )}
         </div>
       </header>
 
@@ -63,8 +75,12 @@ export default function WorkbenchLayout({
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 Evaluation Curve
               </h3>
-              <div className="flex-1 rounded-lg border border-dashed border-muted bg-muted/10 flex items-center justify-center text-xs text-muted-foreground">
-                {graphContent || "Evaluation Graph Placeholder"}
+              <div className="flex-1 min-h-0 min-w-0">
+                {graphContent || (
+                  <div className="w-full h-full rounded-lg border border-dashed border-muted bg-muted/10 flex items-center justify-center text-xs text-muted-foreground">
+                    Evaluation Graph Placeholder
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -79,8 +95,12 @@ export default function WorkbenchLayout({
                   {pliesCount} {pliesCount === 1 ? 'Ply' : 'Plies'}
                 </span>
               </h3>
-              <div className="flex-1 overflow-y-auto rounded-lg border border-dashed border-muted bg-muted/10 flex items-center justify-center text-xs text-muted-foreground p-4">
-                {moveListContent || "No Game Loaded. Paste PGN to get started."}
+              <div className="flex-1 min-h-0 min-w-0 overflow-y-auto">
+                {moveListContent || (
+                  <div className="w-full h-full rounded-lg border border-dashed border-muted bg-muted/10 flex items-center justify-center text-xs text-muted-foreground p-4">
+                    No Game Loaded. Paste PGN to get started.
+                  </div>
+                )}
               </div>
             </div>
 
@@ -89,9 +109,9 @@ export default function WorkbenchLayout({
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 Engine Recommendations (Multi-PV)
               </h3>
-              <div className="flex-1 rounded-lg border border-dashed border-muted bg-muted/10 flex flex-col gap-2 p-3 text-xs text-muted-foreground">
+              <div className="flex-1 min-h-0 min-w-0">
                 {engineContent || (
-                  <div className="flex flex-col gap-2 justify-center h-full items-center">
+                  <div className="w-full h-full rounded-lg border border-dashed border-muted bg-muted/10 flex flex-col gap-2 p-3 text-xs text-muted-foreground justify-center items-center">
                     <span>Engine Idle</span>
                   </div>
                 )}

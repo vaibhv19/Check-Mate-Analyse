@@ -20,6 +20,7 @@ import { Chess } from 'chess.js';
 import SandboxBanner from './features/sandbox/SandboxBanner';
 import { generateAnnotatedPgn, getExportFilename } from './utils/pgnExporter';
 import ExportConfirmDialog from './features/pgn/ExportConfirmDialog';
+import KeyboardShortcutsModal from './features/shortcuts/KeyboardShortcutsModal';
 
 function Workbench() {
   const state = useWorkbenchState();
@@ -33,6 +34,7 @@ function Workbench() {
   const [syntaxErrors, setSyntaxErrors] = useState<string[]>([]);
   const [isEngineEnabled, setIsEngineEnabled] = useState(true);
   const [isExportConfirmOpen, setIsExportConfirmOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
   const engineRef = useRef<StockfishClient | null>(null);
   const activeIndexRef = useRef(state.activeMoveIndex);
@@ -324,6 +326,23 @@ function Workbench() {
     enabled: true,
   });
 
+  // Global keyboard listener for toggling the shortcuts guide modal
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInputActive = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+      if (isInputActive) return;
+
+      if (e.key === 'h' || e.key === 'H') {
+        e.preventDefault();
+        setIsShortcutsOpen(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
   const boardContent = (
     <div className="flex flex-col items-center justify-center gap-4 text-center h-full w-full min-h-0">
       {state.isSandbox && (
@@ -453,12 +472,17 @@ function Workbench() {
         graphContent={<EvaluationGraph />}
         engineContent={<EnginePanel />}
         statusBarContent={statusBarContent}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
       <ExportConfirmDialog
         isOpen={isExportConfirmOpen}
         onClose={() => setIsExportConfirmOpen(false)}
         onConfirm={triggerPgnDownload}
         unevaluatedCount={unevaluatedCount}
+      />
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
       />
     </>
   );
