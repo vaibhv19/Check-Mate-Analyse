@@ -12,6 +12,7 @@ import { parsePgn } from './utils/pgnParser';
 import { validatePgnSyntax, checkMoveLegality } from './utils/pgnValidator';
 import { StockfishClient } from './utils/stockfishClient';
 import type { MoveEvaluation } from './types/state';
+import EnginePanel from './features/engine/EnginePanel';
 
 function Workbench() {
   const state = useWorkbenchState();
@@ -326,6 +327,7 @@ function Workbench() {
     <WorkbenchLayout
       boardContent={boardContent}
       moveListContent={moveListContent}
+      engineContent={<EnginePanel />}
       statusBarContent={statusBarContent}
     />
   );

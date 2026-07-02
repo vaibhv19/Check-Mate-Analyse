@@ -34,6 +34,7 @@ export class StockfishClient {
       };
 
       this.sendCommand('uci');
+      this.sendCommand('setoption name MultiPV value 3');
       this.sendCommand('isready');
     } catch (error) {
       console.error('Failed to initialize Stockfish worker:', error);
