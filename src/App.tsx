@@ -344,13 +344,13 @@ function Workbench() {
   }, []);
 
   const boardContent = (
-    <div className="flex flex-col items-center justify-center gap-4 text-center h-full w-full min-h-0">
+    <div className="flex flex-col items-center justify-center gap-4 text-center w-full">
       {state.isSandbox && (
         <div className="w-full max-w-[min(100%,480px)] shrink-0 px-2">
           <SandboxBanner />
         </div>
       )}
-      <div className="flex-1 min-h-0 w-full flex items-center justify-center">
+      <div className="w-full flex items-center justify-center">
         <ChessboardContainer
           position={activeFen}
           onPieceDrop={handlePieceDrop}
