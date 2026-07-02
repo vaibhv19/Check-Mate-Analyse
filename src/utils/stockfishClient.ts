@@ -1,9 +1,11 @@
+import type { EngineLine } from '../types/state';
+import { parseUciInfoLine } from './engineEvaluationParser';
+
 export interface StockfishOutput {
   depth?: number;
-  score?: number; // centipawns or mate-in-N
-  isMate?: boolean;
   nps?: number;
   bestMove?: string;
+  lines?: EngineLine[];
 }
 
 export type StockfishMessageCallback = (msg: string) => void;
@@ -13,6 +15,7 @@ export class StockfishClient {
   private worker: Worker | null = null;
   private messageListeners: StockfishMessageCallback[] = [];
   private evalListeners: StockfishEvaluationCallback[] = [];
+  private currentLines: EngineLine[] = [];
 
   constructor() {}
 
@@ -23,7 +26,6 @@ export class StockfishClient {
     if (this.worker) return;
 
     try {
-      // Spawn Stockfish JS worker from the public/ static assets folder
       this.worker = new Worker('/stockfish.js');
       
       this.worker.onmessage = (event: MessageEvent) => {
@@ -31,7 +33,6 @@ export class StockfishClient {
         this.handleMessage(msg);
       };
 
-      // Set up engine parameters
       this.sendCommand('uci');
       this.sendCommand('isready');
     } catch (error) {
@@ -51,7 +52,7 @@ export class StockfishClient {
   }
 
   /**
-   * Sends a raw command to the UCI engine.
+   * Sends a UCI command to the worker.
    */
   public sendCommand(command: string): void {
     if (this.worker) {
@@ -60,10 +61,11 @@ export class StockfishClient {
   }
 
   /**
-   * Sets up a position with a custom FEN and triggers a search.
+   * Sets up a position with a custom FEN and triggers search.
    */
   public analyzePosition(fen: string, depth: number): void {
     this.sendCommand('stop');
+    this.currentLines = []; // reset principal variation lines for new search
     this.sendCommand('ucinewgame');
     this.sendCommand(`position fen ${fen}`);
     this.sendCommand(`go depth ${depth}`);
@@ -100,50 +102,19 @@ export class StockfishClient {
 
     // Parse UCI info lines
     if (msg.startsWith('info ') && msg.includes('score')) {
-      const parsedEval = this.parseInfoLine(msg);
-      if (parsedEval) {
-        this.evalListeners.forEach(listener => listener(parsedEval));
+      const parsed = parseUciInfoLine(msg, this.currentLines);
+      if (parsed) {
+        this.currentLines = parsed.updatedLines;
+        this.evalListeners.forEach(listener => listener({
+          depth: parsed.depth,
+          nps: parsed.nps,
+          lines: parsed.updatedLines,
+        }));
       }
     } else if (msg.startsWith('bestmove ')) {
       const parts = msg.split(' ');
       const bestMove = parts[1];
       this.evalListeners.forEach(listener => listener({ bestMove }));
     }
-  }
-
-  /**
-   * Parses standard UCI 'info' lines to extract depth, score (cp/mate), and nodes-per-second (NPS).
-   */
-  private parseInfoLine(line: string): StockfishOutput | null {
-    const parts = line.split(' ');
-    
-    const depthIdx = parts.indexOf('depth');
-    const scoreIdx = parts.indexOf('score');
-    const npsIdx = parts.indexOf('nps');
-    
-    if (scoreIdx === -1) return null;
-
-    const depth = depthIdx !== -1 ? parseInt(parts[depthIdx + 1], 10) : undefined;
-    const nps = npsIdx !== -1 ? parseInt(parts[npsIdx + 1], 10) : undefined;
-
-    let score = 0;
-    let isMate = false;
-
-    const scoreType = parts[scoreIdx + 1]; // 'cp' or 'mate'
-    const scoreValStr = parts[scoreIdx + 2];
-    
-    if (scoreType === 'cp' && scoreValStr) {
-      score = parseInt(scoreValStr, 10);
-    } else if (scoreType === 'mate' && scoreValStr) {
-      score = parseInt(scoreValStr, 10);
-      isMate = true;
-    }
-
-    return {
-      depth,
-      score,
-      isMate,
-      nps,
-    };
   }
 }

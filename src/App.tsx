@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import WorkbenchLayout from './components/layout/WorkbenchLayout';
 import { WorkbenchProvider, useWorkbenchState, useWorkbenchDispatch } from './context/WorkbenchContext';
 import ChessboardContainer from './features/board/ChessboardContainer';
@@ -10,6 +10,8 @@ import StatusBar from './components/layout/StatusBar';
 import LandingForm from './features/pgn/LandingForm';
 import { parsePgn } from './utils/pgnParser';
 import { validatePgnSyntax, checkMoveLegality } from './utils/pgnValidator';
+import { StockfishClient } from './utils/stockfishClient';
+import type { MoveEvaluation } from './types/state';
 
 function Workbench() {
   const state = useWorkbenchState();
@@ -21,6 +23,105 @@ function Workbench() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [pgnError, setPgnError] = useState<string | null>(null);
   const [syntaxErrors, setSyntaxErrors] = useState<string[]>([]);
+  const [isEngineEnabled, setIsEngineEnabled] = useState(true);
+
+  const engineRef = useRef<StockfishClient | null>(null);
+  const activeIndexRef = useRef(state.activeMoveIndex);
+  const sandboxActiveIndexRef = useRef(state.sandboxActiveIndex);
+  const isSandboxRef = useRef(state.isSandbox);
+
+  // Sync index and sandbox state to refs to prevent restarting Stockfish worker when move changes
+  useEffect(() => {
+    activeIndexRef.current = state.activeMoveIndex;
+    sandboxActiveIndexRef.current = state.sandboxActiveIndex;
+    isSandboxRef.current = state.isSandbox;
+  }, [state.activeMoveIndex, state.sandboxActiveIndex, state.isSandbox]);
+
+  // Engine Lifecycle management
+  useEffect(() => {
+    if (state.moves.length === 0 || !isEngineEnabled) {
+      if (engineRef.current) {
+        engineRef.current.stop();
+        engineRef.current = null;
+      }
+      dispatch({
+        type: 'UPDATE_ENGINE_STATUS',
+        payload: { status: 'idle', depth: 0, nps: 0 },
+      });
+      return;
+    }
+
+    dispatch({ type: 'UPDATE_ENGINE_STATUS', payload: { status: 'initializing' } });
+    
+    const client = new StockfishClient();
+    client.start();
+    engineRef.current = client;
+
+    // Listeners
+    const cleanupEval = client.addEvalListener((evaluation) => {
+      if (evaluation.depth !== undefined || evaluation.nps !== undefined) {
+        dispatch({
+          type: 'UPDATE_ENGINE_STATUS',
+          payload: {
+            status: 'analyzing',
+            depth: evaluation.depth,
+            nps: evaluation.nps,
+          },
+        });
+      }
+
+      if (evaluation.lines && evaluation.lines.length > 0) {
+        const activeIndex = isSandboxRef.current
+          ? sandboxActiveIndexRef.current
+          : activeIndexRef.current;
+
+        if (activeIndex >= 0) {
+          const primaryLine = evaluation.lines[0];
+          const moveEvaluation: MoveEvaluation = {
+            score: primaryLine.score,
+            isMate: primaryLine.isMate,
+            mateIn: primaryLine.mateIn,
+            bestMove: evaluation.bestMove || primaryLine.pv[0] || '',
+            lines: evaluation.lines,
+            depth: evaluation.depth || 0,
+          };
+
+          dispatch({
+            type: 'UPDATE_EVAL',
+            payload: {
+              index: activeIndex,
+              evaluation: moveEvaluation,
+              isSandbox: isSandboxRef.current,
+            },
+          });
+        }
+      }
+
+      if (evaluation.bestMove && !evaluation.lines) {
+        dispatch({
+          type: 'UPDATE_ENGINE_STATUS',
+          payload: { status: 'idle' },
+        });
+      }
+    });
+
+    return () => {
+      client.stop();
+      cleanupEval();
+      engineRef.current = null;
+    };
+  }, [state.moves.length, isEngineEnabled, dispatch]);
+
+  // Trigger position search on active FEN changes
+  useEffect(() => {
+    if (engineRef.current && state.moves.length > 0 && isEngineEnabled) {
+      engineRef.current.analyzePosition(activeFen, 15);
+    }
+  }, [activeFen, state.moves.length, isEngineEnabled]);
+
+  const handleToggleEngine = () => {
+    setIsEngineEnabled(prev => !prev);
+  };
 
   const handleLoadPgn = (pgnText: string) => {
     setPgnError(null);
@@ -204,6 +305,9 @@ function Workbench() {
       ecoCode={activeOpening?.eco}
       engineDepth={state.engineDepth}
       nps={state.engineNps}
+      engineStatus={state.engineStatus}
+      isEngineEnabled={isEngineEnabled}
+      onToggleEngine={handleToggleEngine}
     />
   );
 
