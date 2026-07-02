@@ -1,5 +1,5 @@
 import type { MoveEntry, ClassificationType } from '../types/state';
-import { calculateMoveDelta } from './moveDeltaCalculator';
+import { getScoreValue } from './moveDeltaCalculator';
 
 /**
  * Classifies a played move based on its evaluation loss (delta) compared to the best move,
@@ -47,23 +47,32 @@ export function classifyMoveEntry(
   const currentIsMate = currentMove.evaluation.isMate;
   const currentMateIn = currentMove.evaluation.mateIn;
 
+  // Get raw values with mate equivalents
+  const parentVal = getScoreValue(parentScore, parentIsMate, parentMateIn);
+  const currentVal = getScoreValue(currentScore, currentIsMate, currentMateIn);
+
+  // Normalize scores to White's perspective:
+  // - Odd plies are Black to move (engine score is relative to Black -> flip sign for White)
+  // - Even plies are White to move (engine score is relative to White -> keep sign)
+  const isCurrentOdd = currentMove.ply % 2 === 1;
+  const currentNorm = isCurrentOdd ? -currentVal : currentVal;
+
+  const isParentOdd = (currentMove.ply - 1) % 2 === 1;
+  const parentNorm = isParentOdd ? -parentVal : parentVal;
+
   // White moved on odd plies (1, 3, 5...), Black moved on even plies (2, 4, 6...)
   const playerColor: 'w' | 'b' = currentMove.ply % 2 === 1 ? 'w' : 'b';
 
-  // Calculate centipawn loss (delta)
-  const delta = calculateMoveDelta(
-    currentScore,
-    currentIsMate,
-    currentMateIn,
-    parentScore,
-    parentIsMate,
-    parentMateIn,
-    playerColor
-  );
+  // Calculate centipawn loss (delta) from player's perspective
+  const delta = playerColor === 'w'
+    ? parentNorm - currentNorm
+    : currentNorm - parentNorm;
+
+  const finalDelta = Math.max(0, delta);
 
   // Checks for forced and opening book moves
   const isForced = false;
   const isBook = false; // Will be set dynamically by opening book matcher if applicable
 
-  return classifyMove(delta, isForced, isBook);
+  return classifyMove(finalDelta, isForced, isBook);
 }
