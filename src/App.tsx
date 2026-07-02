@@ -324,7 +324,9 @@ function Workbench() {
     </div>
   );
 
-  const moveListContent = state.moves.length > 0 ? (
+  const displayMoves = state.isSandbox ? state.sandboxMoves : state.moves;
+
+  const moveListContent = displayMoves.length > 0 ? (
     <div className="w-full h-full flex flex-col font-mono text-xs overflow-hidden min-h-0 min-w-0">
       <div className="grid grid-cols-12 gap-1 py-1 border-b border-border/20 text-muted-foreground font-semibold shrink-0">
         <div className="col-span-2">#</div>
@@ -332,9 +334,9 @@ function Workbench() {
         <div className="col-span-5 text-left">Black</div>
       </div>
       <div className="flex-1 overflow-y-auto min-h-0 min-w-0 py-1 divide-y divide-border/10">
-        {Array.from({ length: Math.ceil(state.moves.length / 2) }).map((_, turnIdx) => {
-          const whiteMove = state.moves[turnIdx * 2];
-          const blackMove = state.moves[turnIdx * 2 + 1];
+        {Array.from({ length: Math.ceil(displayMoves.length / 2) }).map((_, turnIdx) => {
+          const whiteMove = displayMoves[turnIdx * 2];
+          const blackMove = displayMoves[turnIdx * 2 + 1];
           
           return (
             <div key={turnIdx} className="grid grid-cols-12 gap-1 py-1 items-center hover:bg-muted/10 transition-all px-0.5">
