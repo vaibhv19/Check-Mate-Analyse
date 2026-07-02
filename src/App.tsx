@@ -346,7 +346,7 @@ function Workbench() {
   const boardContent = (
     <div className="flex flex-col items-center justify-center gap-4 text-center w-full">
       {state.isSandbox && (
-        <div className="w-full max-w-[min(100%,480px)] shrink-0 px-2">
+        <div className="w-full max-w-[min(100%,520px)] shrink-0 px-2">
           <SandboxBanner />
         </div>
       )}
@@ -376,7 +376,7 @@ function Workbench() {
   const displayMoves = state.isSandbox ? state.sandboxMoves : state.moves;
 
   const moveListContent = displayMoves.length > 0 ? (
-    <div className="w-full h-full flex flex-col font-mono text-xs overflow-hidden min-h-0 min-w-0">
+    <div className="w-full flex-1 flex flex-col font-mono text-xs overflow-hidden min-h-0 min-w-0">
       <div className="grid grid-cols-12 gap-1 py-1 border-b border-border/20 text-muted-foreground font-semibold shrink-0">
         <div className="col-span-2">#</div>
         <div className="col-span-5 text-left">White</div>
