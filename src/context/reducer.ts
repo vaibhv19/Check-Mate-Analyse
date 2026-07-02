@@ -73,20 +73,34 @@ export function workbenchReducer(state: WorkbenchState, action: WorkbenchAction)
         engineNps: action.payload.nps !== undefined ? action.payload.nps : state.engineNps,
       };
 
-    case 'ENTER_SANDBOX':
+    case 'ENTER_SANDBOX': {
+      const slicedMoves = state.moves.slice(0, state.activeMoveIndex + 1);
+      const newMove = {
+        ...action.payload,
+        ply: slicedMoves.length + 1,
+      };
+      const nextMoves = [...slicedMoves, newMove];
       return {
         ...state,
         isSandbox: true,
-        sandboxMoves: [action.payload],
-        sandboxActiveIndex: 0,
+        sandboxMoves: nextMoves,
+        sandboxActiveIndex: nextMoves.length - 1,
       };
+    }
 
-    case 'PLAY_SANDBOX_MOVE':
+    case 'PLAY_SANDBOX_MOVE': {
+      const slicedMoves = state.sandboxMoves.slice(0, state.sandboxActiveIndex + 1);
+      const newMove = {
+        ...action.payload,
+        ply: slicedMoves.length + 1,
+      };
+      const nextMoves = [...slicedMoves, newMove];
       return {
         ...state,
-        sandboxMoves: [...state.sandboxMoves, action.payload],
-        sandboxActiveIndex: state.sandboxMoves.length,
+        sandboxMoves: nextMoves,
+        sandboxActiveIndex: nextMoves.length - 1,
       };
+    }
 
     case 'EXIT_SANDBOX':
       return {

@@ -16,6 +16,8 @@ import EnginePanel from './features/engine/EnginePanel';
 import { classifyMoveEntry } from './utils/moveClassifier';
 import ClassificationBadge from './features/classification/ClassificationBadge';
 import EvaluationGraph from './features/graph/EvaluationGraph';
+import { Chess } from 'chess.js';
+import SandboxBanner from './features/sandbox/SandboxBanner';
 
 function Workbench() {
   const state = useWorkbenchState();
@@ -146,6 +148,57 @@ function Workbench() {
     setIsEngineEnabled(prev => !prev);
   };
 
+  const handlePieceDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
+    const game = new Chess(activeFen);
+    
+    try {
+      const promotionChar = piece.toLowerCase().charAt(1) || 'q';
+      const move = game.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: promotionChar,
+      });
+      
+      if (!move) return false;
+
+      if (state.isSandbox) {
+        dispatch({
+          type: 'PLAY_SANDBOX_MOVE',
+          payload: {
+            ply: 0,
+            san: move.san,
+            uci: move.from + move.to + (move.promotion || ''),
+            fen: game.fen(),
+          },
+        });
+        return true;
+      }
+
+      const nextMoveIndex = state.activeMoveIndex + 1;
+      const nextMove = state.moves[nextMoveIndex];
+      const playedUci = move.from + move.to + (move.promotion || '');
+
+      if (nextMove && nextMove.uci === playedUci) {
+        dispatch({ type: 'SELECT_MOVE', payload: nextMoveIndex });
+      } else {
+        dispatch({
+          type: 'ENTER_SANDBOX',
+          payload: {
+            ply: 0,
+            san: move.san,
+            uci: playedUci,
+            fen: game.fen(),
+          },
+        });
+      }
+
+      return true;
+    } catch (err) {
+      console.warn('Illegal move attempted:', err);
+      return false;
+    }
+  };
+
   const handleLoadPgn = (pgnText: string) => {
     setPgnError(null);
     setSyntaxErrors([]);
@@ -244,8 +297,17 @@ function Workbench() {
 
   const boardContent = (
     <div className="flex flex-col items-center justify-center gap-4 text-center h-full w-full min-h-0">
+      {state.isSandbox && (
+        <div className="w-full max-w-[min(100%,480px)] shrink-0 px-2">
+          <SandboxBanner />
+        </div>
+      )}
       <div className="flex-1 min-h-0 w-full flex items-center justify-center">
-        <ChessboardContainer position={activeFen} />
+        <ChessboardContainer
+          position={activeFen}
+          onPieceDrop={handlePieceDrop}
+          arePiecesDraggable={!isPlaying}
+        />
       </div>
       <div className="shrink-0 w-full flex justify-center">
         <BoardControls
