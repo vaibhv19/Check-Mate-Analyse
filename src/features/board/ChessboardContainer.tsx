@@ -37,7 +37,7 @@ export default function ChessboardContainer({
 
   return (
     <div className={`w-full flex items-center justify-center p-1 md:p-2 ${hasMoves ? 'pl-7 md:pl-9' : ''}`}>
-      <div className="relative w-full max-w-[min(100%,600px)] lg:max-w-[min(100%,680px)] aspect-square">
+      <div className="relative w-full max-w-[min(100%,480px)] lg:max-w-[min(100%,540px)] aspect-square">
         {hasMoves && (
           <div className="absolute top-0 bottom-0 -left-6 md:-left-7 w-4 md:w-5">
             <EvaluationBar />
