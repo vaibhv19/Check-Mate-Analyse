@@ -11,8 +11,10 @@ import LandingForm from './features/pgn/LandingForm';
 import { parsePgn } from './utils/pgnParser';
 import { validatePgnSyntax, checkMoveLegality } from './utils/pgnValidator';
 import { StockfishClient } from './utils/stockfishClient';
-import type { MoveEvaluation } from './types/state';
+import type { MoveEvaluation, MoveEntry } from './types/state';
 import EnginePanel from './features/engine/EnginePanel';
+import { classifyMoveEntry } from './utils/moveClassifier';
+import ClassificationBadge from './features/classification/ClassificationBadge';
 
 function Workbench() {
   const state = useWorkbenchState();
@@ -30,13 +32,17 @@ function Workbench() {
   const activeIndexRef = useRef(state.activeMoveIndex);
   const sandboxActiveIndexRef = useRef(state.sandboxActiveIndex);
   const isSandboxRef = useRef(state.isSandbox);
+  const movesRef = useRef(state.moves);
+  const sandboxMovesRef = useRef(state.sandboxMoves);
 
-  // Sync index and sandbox state to refs to prevent restarting Stockfish worker when move changes
+  // Sync index, moves, and sandbox state to refs to prevent restarting Stockfish worker when move changes
   useEffect(() => {
     activeIndexRef.current = state.activeMoveIndex;
     sandboxActiveIndexRef.current = state.sandboxActiveIndex;
     isSandboxRef.current = state.isSandbox;
-  }, [state.activeMoveIndex, state.sandboxActiveIndex, state.isSandbox]);
+    movesRef.current = state.moves;
+    sandboxMovesRef.current = state.sandboxMoves;
+  }, [state.activeMoveIndex, state.sandboxActiveIndex, state.isSandbox, state.moves, state.sandboxMoves]);
 
   // Engine Lifecycle management
   useEffect(() => {
@@ -87,11 +93,26 @@ function Workbench() {
             depth: evaluation.depth || 0,
           };
 
+          const parentMove = isSandboxRef.current
+            ? sandboxMovesRef.current[activeIndex - 1] || null
+            : movesRef.current[activeIndex - 1] || null;
+
+          const tempMoveEntry: MoveEntry = {
+            ply: activeIndex + 1,
+            san: '',
+            uci: '',
+            fen: '',
+            evaluation: moveEvaluation,
+          };
+
+          const classification = classifyMoveEntry(tempMoveEntry, parentMove);
+
           dispatch({
             type: 'UPDATE_EVAL',
             payload: {
               index: activeIndex,
               evaluation: moveEvaluation,
+              classification,
               isSandbox: isSandboxRef.current,
             },
           });
@@ -259,26 +280,32 @@ function Workbench() {
               {/* White Move */}
               <button
                 onClick={() => dispatch({ type: 'SELECT_MOVE', payload: turnIdx * 2 })}
-                className={`col-span-5 text-left px-2 py-0.5 rounded transition-all truncate font-medium cursor-pointer ${
+                className={`col-span-5 flex items-center justify-between px-2 py-0.5 rounded transition-all truncate font-medium cursor-pointer ${
                   currentIndex === turnIdx * 2
                     ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
                     : 'text-foreground hover:bg-muted/40'
                 }`}
               >
-                {whiteMove.san}
+                <span className="truncate">{whiteMove.san}</span>
+                {whiteMove.classification && (
+                  <ClassificationBadge type={whiteMove.classification} />
+                )}
               </button>
               
               {/* Black Move */}
               {blackMove ? (
                 <button
                   onClick={() => dispatch({ type: 'SELECT_MOVE', payload: turnIdx * 2 + 1 })}
-                  className={`col-span-5 text-left px-2 py-0.5 rounded transition-all truncate font-medium cursor-pointer ${
+                  className={`col-span-5 flex items-center justify-between px-2 py-0.5 rounded transition-all truncate font-medium cursor-pointer ${
                     currentIndex === turnIdx * 2 + 1
                       ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
                       : 'text-foreground hover:bg-muted/40'
                   }`}
                 >
-                  {blackMove.san}
+                  <span className="truncate">{blackMove.san}</span>
+                  {blackMove.classification && (
+                    <ClassificationBadge type={blackMove.classification} />
+                  )}
                 </button>
               ) : (
                 <div className="col-span-5" />
