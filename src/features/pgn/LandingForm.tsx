@@ -77,7 +77,7 @@ export default function LandingForm({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
       <Card className="w-full max-w-2xl border-border bg-card shadow-2xl animate-in fade-in-50 zoom-in-95 duration-250">
         <CardHeader className="text-center pb-2">
-          <CardTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-accent to-accent bg-clip-text text-transparent">
+          <CardTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             CheckMate Analyze
           </CardTitle>
           <CardDescription className="text-sm text-muted-foreground mt-1.5">
