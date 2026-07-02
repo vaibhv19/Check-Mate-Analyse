@@ -25,7 +25,7 @@ export default function BoardControls({
   onExport,
 }: BoardControlsProps) {
   return (
-    <div className="flex items-center justify-center gap-1.5 py-2 w-full max-w-[480px] relative">
+    <div className="flex items-center justify-center gap-1.5 py-2 w-full max-w-[520px] relative">
       {/* First Move */}
       <Button
         variant="ghost"
