@@ -6,6 +6,22 @@ CheckMate Analyze is a premium, state-of-the-art interactive chess game analysis
 
 ---
 
+## 📷 Screenshots
+
+### 1. Landing & PGN Import Form
+![Landing Page](./screenshots/landing.png)
+
+### 2. Main Game Analysis Workbench
+![Main Workbench](./screenshots/workbench.png)
+
+### 3. Interactive Sandbox Mode
+![Sandbox Mode](./screenshots/sandbox.png)
+
+### 4. Interactive Keyboard Shortcuts Guide
+![Keyboard Shortcuts](./screenshots/shortcuts.png)
+
+---
+
 ## 🌟 Key Features
 
 ### 1. Interactive PGN Parser & Import
