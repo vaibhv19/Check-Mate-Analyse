@@ -1,8 +1,16 @@
-# ♟️ CheckMate Analyze
+# ♟️ CheckMate Analyze 
 
-CheckMate Analyze is a premium, state-of-the-art interactive chess game analysis workbench built with **React**, **TypeScript**, and **Vite**. The platform allows chess enthusiasts and analysts to import standard PGN logs, run real-time local Stockfish engine calculations inside the browser, explore sandbox variation branches, review move classifications, and export fully annotated games.
+[![React](https://img.shields.io/badge/React-19-blue.svg?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.0-purple.svg?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-4.0-38bdf8.svg?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+[![Stockfish WASM](https://img.shields.io/badge/Stockfish-WASM-orange.svg?style=flat-square)](https://stockfishchess.org/)
+[![Vitest](https://img.shields.io/badge/Vitest-4.0-green.svg?style=flat-square&logo=vitest)](https://vitest.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-🚀 **Live Site**: [check-mate-analyse.vercel.app](https://check-mate-analyse.vercel.app/)
+CheckMate Analyze is a premium, local-first chess analysis workbench designed to treat chess games like source code: **the PGN is the program, the engine is the compiler/linter, and the user's goal is to debug their tactical mistakes.** By eliminating account walls, subscriptions, and remote server latency, CheckMate Analyze provides instant, private chess analysis executed entirely inside the client's browser.
+
+🚀 **Live Workbench**: [check-mate-analyse.vercel.app](https://check-mate-analyse.vercel.app/)
 
 ---
 
@@ -17,7 +25,7 @@ CheckMate Analyze is a premium, state-of-the-art interactive chess game analysis
 ### 3. Interactive Sandbox Mode
 ![Sandbox Mode](./screenshots/sandbox.png)
 
-### 4. Interactive Keyboard Shortcuts Guide
+### 4. Keyboard Shortcuts Guide
 ![Keyboard Shortcuts](./screenshots/shortcuts.png)
 
 ---
@@ -25,83 +33,108 @@ CheckMate Analyze is a premium, state-of-the-art interactive chess game analysis
 ## 🌟 Key Features
 
 ### 1. Interactive PGN Parser & Import
-- Parse standard PGN files with support for headers (White, Black, Event, Date) and comments.
-- Automatically handles standard algebraic notation (SAN) and coordinates.
-- Includes a built-in pre-loaded **Grandmaster Sample Game** (Kasparov vs. Topalov, 1999) to get started instantly.
+* Parse standard PGN files with support for headers and comments.
+* Pre-loaded with a Grandmaster Sample Game (Kasparov vs. Topalov, 1999) to let you try the workbench instantly.
+* Strict syntax and legality validation catches malformed or illegal moves on ingestion.
 
 ### 2. Multi-PV Stockfish Web Worker Engine
-- Runs a local **Stockfish 16 WASM engine** directly in the browser via multithreaded web workers.
-- Supports **Multi-PV recommendations** (displays the top 3 alternative paths with depth, score, and move details).
-- Accelerated with Cross-Origin Opener Policy (COOP) and Cross-Origin Embedder Policy (COEP) headers on Vercel deployment for CPU multithreading.
+* Runs a local **Stockfish 16 WASM engine** in the browser using multi-threaded Web Workers.
+* Streams **Multi-PV recommendations** (displays the top 3 alternative paths with depth, score, and principal variations).
+* Accelerated with COOP/COEP isolation headers on Vercel deployment to enable SharedArrayBuffer multi-threading.
 
-### 3. Lichess-Style Move Classification
-- Compares engine evaluations of played moves against the best moves using normalized White-perspective centipawn scoring.
-- Classifies each move with distinct badges:
-  - ✨ **Best**: Played move matches the best engine recommendations.
-  - 🌟 **Excellent**: Centipawn loss $\le 15$.
-  - 👍 **Good**: Centipawn loss $\le 40$.
-  - ⚠️ **Inaccuracy**: Centipawn loss $\le 100$.
-  - ❌ **Mistake**: Centipawn loss $\le 200$.
-  - 💥 **Blunder**: Centipawn loss $> 200$.
-  - 🔄 **Forced**: Only one legal move was available.
-  - 📖 **Book**: Matches known openings.
+### 3. Move Classifications & Badges
+* Compares played move evaluations against engine recommendations using White-perspective centipawn delta calculations.
+* Classifies moves with distinct badges:
+  * 👑 **Best**: Played move matches the best engine recommendation.
+  * 🟢 **Excellent**: Centipawn loss is $\le 15\text{ cp}$.
+  * 🔵 **Good**: Centipawn loss is between $16\text{ cp}$ and $40\text{ cp}$.
+  * 🟡 **Inaccuracy**: Centipawn loss is between $41\text{ cp}$ and $100\text{ cp}$.
+  * 🟠 **Mistake**: Centipawn loss is between $101\text{ cp}$ and $200\text{ cp}$.
+  * 🔴 **Blunder**: Centipawn loss is $> 200\text{ cp}$.
+  * ⚪ **Forced**: The only legal move available in the position.
+  * 📖 **Book**: Matches known openings.
 
 ### 4. Real-time Evaluation Bar & Graph
-- **Evaluation Bar**: A Lichess-style vertical panel positioned next to the board showing the relative advantage between White and Black, synchronized to the exact height of the board.
-- **Evaluation Curve**: A responsive area chart visualization illustrating the evaluation score flow over the entire game sequence, letting you spot critical blunders or turning points instantly.
+* **Evaluation Bar**: A vertical gauge showing the relative advantage between White and Black, synchronized to the exact height of the board.
+* **Evaluation Curve**: A responsive area chart visualization showing the evaluation trend of the game, letting you spot turning points instantly.
 
-### 5. Interactive Sandbox Mode
-- Intercepts FEN drop movements on the board to let you play alternative lines at any point in the game.
-- Automatically forks the timeline and creates sandbox branches without modifying the original game log history.
-- Exit sandbox mode at any time with a single click to restore the original game path.
+### 5. Interactive "What-If" Sandbox
+* Play alternative moves on the board at any point to fork the timeline into a sandbox branch.
+* Keeps the original game history immutable.
+* Exit the sandbox with one click to restore the original game path.
 
 ### 6. PGN Exporter with Eval Annotations
-- Compiles the analyzed game and exports it to a standard PGN file.
-- Appends Stockfish evaluations and depth details directly to the moves as standardized annotations (e.g., `1. e4 { [%eval 0.3] }`).
-- Displays a warning modal if you export a game that has not been fully analyzed.
-
-### 7. Accessibility & Shortcuts Guide
-- View the complete keybind guide modal by pressing the help button or the `H` key.
-- Full keyboard navigation support (Left/Right arrows for move stepping, Space for autoplay toggles).
+* Compiles the analyzed game and exports it to a standard PGN file.
+* Appends Stockfish evaluations directly to the moves as comments: `1. e4 { [%eval 0.15] [%cld Best] } ...`
 
 ---
 
-## 🛠️ Technology Stack
+## 🏗️ System Architecture & Thread Separation
 
-- **Core**: React 18, TypeScript, Vite
-- **Styling**: TailwindCSS, CSS Variables, Custom Aspect Ratios
-- **Chess Logic**: Chess.js (Rules and FEN generation), React-Chessboard
-- **Engine**: Stockfish WASM (compiled for multi-threaded Web Workers)
-- **Charts**: Recharts
-- **Icons**: Lucide React
-- **Testing**: Vitest, JSDom Testing Library
+To maintain a fluid interface, the CPU-heavy chess engine calculations are physically isolated from the browser's main UI thread.
+
+```mermaid
+graph TD
+    subgraph MAIN_THREAD ["Main UI Thread"]
+        UI["React Board UI (react-chessboard)"]
+        Store["State Reducer (reducer.ts)"]
+        Client["StockfishClient Manager"]
+    end
+
+    subgraph WORKER_THREAD ["Worker Thread"]
+        Worker["Web Worker (stockfish.js)"]
+        Engine["Stockfish WASM (Alpha-Beta Search)"]
+    end
+
+    %% Flow
+    UI <--> Store
+    Store <--> Client
+    Client -- postMessage(UCI commands) --> Worker
+    Worker -- onmessage(UCI info streams) --> Client
+    Worker <--> Engine
+```
+
+### Flow Details:
+* **The Interface Layer** (Board, Move List, Graph) consumes the state context and operates strictly on callbacks.
+* **The Workbench Controller** handles state, validates move legality using `chess.js`, and manages the analysis lifecycle.
+* **The StockfishClient** coordinates the Web Worker instance, communicating using string-based Universal Chess Interface (UCI) protocols over postMessage.
 
 ---
 
-## 📂 Project Architecture
+## ⚡ Engineering Deep-Dives
+
+### A. Thread Isolation & 60fps UI Guarantee
+Running a chess engine in the browser can easily lock up the main JavaScript thread, causing sluggish piece dragging and frozen buttons. We resolved this by delegating Stockfish WASM to a dedicated background Web Worker thread. This ensures the main UI thread stays clear to render layout updates at a constant 60fps.
+
+### B. Navigation Interrupt Dominance
+If a user rapidly traverses moves using arrow keys, the engine must not queue up calculation requests. We implemented **Interrupt Dominance**: when a new FEN is selected, the client immediately issues a `stop` command to the worker, clearing its registers and starting search on the new FEN instantly. This prevents CPU cycle pile-ups and heat throttling.
+
+### C. Math Normalization & Mate Scaling
+Standard engine scores are reported relative to the active player. To plot them on a single graph and compute move deltas, we normalize all scores to White's perspective.
+Checkmate scores (e.g., mate-in-3) are mapped to a high-value spectrum (`MATE_VALUE = 20000`) and penalized based on the distance to mate:
+
+$$V = \text{MATE\_VALUE} - (\text{plies\_to\_mate} \times 100)$$
+
+This ensures that mate-in-1 is graded higher than mate-in-3, and that any checkmate is valued higher than any centipawn score.
+
+---
+
+## 📂 Project Structure
 
 ```
 src/
-├── components/          # Shared components (layouts, statusbar)
-│   └── layout/
-│       └── WorkbenchLayout.tsx  # Main responsive grid dashboard layout
-├── context/             # Redux-style Global Workbench State
-│   ├── reducer.ts       # Action handlers for FEN, moves, sandbox, and active indexes
-│   └── WorkbenchContext.tsx # Context Provider & state access hooks
-├── features/            # Feature modular components
+├── components/          # Shared layout grid and statusbar
+├── context/             # Global Context Store & reducer actions
+├── features/            # Modular feature components
 │   ├── board/           # Chessboard & BoardControls
 │   ├── classification/  # Move classification badges
-│   ├── engine/          # Stockfish web worker handlers, recommendations, and EvalBar
-│   ├── graph/           # Evaluation Curve Recharts component
-│   ├── pgn/             # Export confirm dialogs and import LandingForm
+│   ├── engine/          # Web worker engine panels and EvalBar
+│   ├── graph/           # Recharts area graph
+│   ├── pgn/             # Export dialogs and LandingForm
 │   ├── sandbox/         # Sandbox banner alert
 │   └── shortcuts/       # Keyboard shortcut guides
-├── utils/               # Logic utilities
-│   ├── moveClassifier.ts     # Centipawn loss and perspective calculators
-│   ├── pgnExporter.ts        # PGN string serializer
-│   ├── pgnParser.ts          # Regular expressions parser
-│   └── stockfishClient.ts    # Web Worker Stockfish runner
-└── test/                # Unit and Integration Test suite
+├── utils/               # Parsers, classifiers, and stockfish client
+└── test/                # Unit & integration test suites
 ```
 
 ---
@@ -130,16 +163,17 @@ src/
    npm run build
    ```
 
-5. **Run Lint Checks**:
+5. **Run Lint and Formatting checks**:
    ```bash
    npm run lint
+   npm run format:check
    ```
 
 ---
 
 ## 🧪 Running Tests
 
-The project includes an extensive test suite verifying parsers, classification deltas, board navigation, and sandbox transitions.
+The project includes unit and integration tests verifying parsers, classification deltas, board navigation, and sandbox transitions.
 
 To execute tests with **Vitest**:
 ```bash
@@ -148,32 +182,6 @@ npm run test
 
 ---
 
-## 📦 Deployment Configuration
-
-Deployed on Vercel with COOP & COEP isolation headers in `vercel.json` to enable SharedArrayBuffer multithreading for Stockfish WASM:
-
-```json
-{
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin"
-        },
-        {
-          "key": "Cross-Origin-Embedder-Policy",
-          "value": "require-corp"
-        }
-      ]
-    }
-  ]
-}
-```
-
----
-
 ## 📄 License
 
-This project is open-source and available under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
