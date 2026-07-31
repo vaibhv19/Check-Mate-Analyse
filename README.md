@@ -1,14 +1,14 @@
-# ♟️ CheckMate Analyze 
+# ♟️ Check-Mate-Analyse 
 
-[![React](https://img.shields.io/badge/React-19-blue.svg?style=flat-square&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-8.0-purple.svg?style=flat-square&logo=vite)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-4.0-38bdf8.svg?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+[![React](https://img.shields.io/badge/React-19.2.7-blue.svg?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.1.2-purple.svg?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-4.3.2-38bdf8.svg?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
 [![Stockfish WASM](https://img.shields.io/badge/Stockfish-WASM-orange.svg?style=flat-square)](https://stockfishchess.org/)
-[![Vitest](https://img.shields.io/badge/Vitest-4.0-green.svg?style=flat-square&logo=vitest)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-4.1.9-green.svg?style=flat-square&logo=vitest)](https://vitest.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-CheckMate Analyze is a premium, local-first chess analysis workbench designed to treat chess games like source code: **the PGN is the program, the engine is the compiler/linter, and the user's goal is to debug their tactical mistakes.** By eliminating account walls, subscriptions, and remote server latency, CheckMate Analyze provides instant, private chess analysis executed entirely inside the client's browser.
+Check-Mate-Analyse is a premium, local-first chess analysis workbench designed to treat chess games like source code: **the PGN is the program, the engine is the compiler/linter, and the user's goal is to debug their tactical mistakes.** By eliminating account walls, subscriptions, and remote server latency, Check-Mate-Analyse provides instant, private chess analysis executed entirely inside the client's browser.
 
 🚀 **Live Workbench**: [check-mate-analyse.vercel.app](https://check-mate-analyse.vercel.app/)
 
