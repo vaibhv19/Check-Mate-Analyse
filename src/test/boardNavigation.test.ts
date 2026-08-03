@@ -82,4 +82,50 @@ describe('Board Navigation Integration Flow', () => {
     expect(state.activeMoveIndex).toBe(0);
     expect(getActiveFen(state)).toBe('FEN_1');
   });
+
+  describe('Board Orientation / Perspective Toggle Flow', () => {
+    it('should initialize board orientation as white', () => {
+      expect(initialState.boardOrientation).toBe('white');
+    });
+
+    it('should toggle board orientation correctly between white and black', () => {
+      let state = workbenchReducer(initialState, { type: 'TOGGLE_BOARD_ORIENTATION' });
+      expect(state.boardOrientation).toBe('black');
+
+      state = workbenchReducer(state, { type: 'TOGGLE_BOARD_ORIENTATION' });
+      expect(state.boardOrientation).toBe('white');
+    });
+
+    it('should persist board orientation through moves, sandbox changes, and new game loads', () => {
+      // 1. Start with Black orientation
+      let state = workbenchReducer(initialState, { type: 'TOGGLE_BOARD_ORIENTATION' });
+      expect(state.boardOrientation).toBe('black');
+
+      // 2. Load game - orientation should persist
+      const moves = [
+        { ply: 1, san: 'e4', uci: 'e2e4', fen: 'FEN_1' },
+        { ply: 2, san: 'e5', uci: 'e7e5', fen: 'FEN_2' },
+      ];
+      state = workbenchReducer(state, {
+        type: 'LOAD_GAME',
+        payload: { headers: {}, moves },
+      });
+      expect(state.boardOrientation).toBe('black');
+
+      // 3. Select move - orientation should persist
+      state = workbenchReducer(state, { type: 'SELECT_MOVE', payload: 0 });
+      expect(state.boardOrientation).toBe('black');
+
+      // 4. Enter sandbox - orientation should persist
+      const sandboxMove = { ply: 2, san: 'c5', uci: 'c7c5', fen: 'FEN_SANDBOX_1' };
+      state = workbenchReducer(state, { type: 'ENTER_SANDBOX', payload: sandboxMove });
+      expect(state.isSandbox).toBe(true);
+      expect(state.boardOrientation).toBe('black');
+
+      // 5. Exit sandbox - orientation should persist
+      state = workbenchReducer(state, { type: 'EXIT_SANDBOX' });
+      expect(state.isSandbox).toBe(false);
+      expect(state.boardOrientation).toBe('black');
+    });
+  });
 });

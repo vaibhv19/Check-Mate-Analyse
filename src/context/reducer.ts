@@ -8,7 +8,8 @@ export type WorkbenchAction =
   | { type: 'ENTER_SANDBOX'; payload: MoveEntry }
   | { type: 'PLAY_SANDBOX_MOVE'; payload: MoveEntry }
   | { type: 'EXIT_SANDBOX' }
-  | { type: 'RESET' };
+  | { type: 'RESET' }
+  | { type: 'TOGGLE_BOARD_ORIENTATION' };
 
 export const initialState: WorkbenchState = {
   headers: null,
@@ -20,6 +21,7 @@ export const initialState: WorkbenchState = {
   isSandbox: false,
   sandboxMoves: [],
   sandboxActiveIndex: -1,
+  boardOrientation: 'white',
 };
 
 export function workbenchReducer(state: WorkbenchState, action: WorkbenchAction): WorkbenchState {
@@ -27,6 +29,7 @@ export function workbenchReducer(state: WorkbenchState, action: WorkbenchAction)
     case 'LOAD_GAME':
       return {
         ...initialState,
+        boardOrientation: state.boardOrientation,
         headers: action.payload.headers,
         moves: action.payload.moves,
         activeMoveIndex: -1,
@@ -112,6 +115,12 @@ export function workbenchReducer(state: WorkbenchState, action: WorkbenchAction)
 
     case 'RESET':
       return initialState;
+
+    case 'TOGGLE_BOARD_ORIENTATION':
+      return {
+        ...state,
+        boardOrientation: state.boardOrientation === 'white' ? 'black' : 'white',
+      };
 
     default:
       return state;

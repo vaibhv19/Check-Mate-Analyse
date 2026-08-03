@@ -1,4 +1,4 @@
-import { ChevronsLeft, ChevronLeft, Play, Pause, ChevronRight, ChevronsRight, Download } from 'lucide-react';
+import { ChevronsLeft, ChevronLeft, Play, Pause, ChevronRight, ChevronsRight, Download, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface BoardControlsProps {
@@ -11,6 +11,7 @@ interface BoardControlsProps {
   isFirstDisabled?: boolean;
   isLastDisabled?: boolean;
   onExport?: () => void;
+  onFlip: () => void;
 }
 
 export default function BoardControls({
@@ -23,9 +24,21 @@ export default function BoardControls({
   isFirstDisabled = false,
   isLastDisabled = false,
   onExport,
+  onFlip,
 }: BoardControlsProps) {
   return (
     <div className="flex items-center justify-center gap-1.5 py-2 w-full max-w-[520px] relative">
+      {/* Flip Board */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onFlip}
+        title="Flip Board"
+        className="h-9 w-9 text-muted-foreground hover:text-foreground absolute left-0"
+      >
+        <RotateCw className="h-4.5 w-4.5" />
+      </Button>
+
       {/* First Move */}
       <Button
         variant="ghost"

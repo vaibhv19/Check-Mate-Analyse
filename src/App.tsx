@@ -353,6 +353,7 @@ function Workbench() {
       <div className="w-full flex items-center justify-center">
         <ChessboardContainer
           position={activeFen}
+          orientation={state.boardOrientation}
           onPieceDrop={handlePieceDrop}
           arePiecesDraggable={!isPlaying}
         />
@@ -368,6 +369,7 @@ function Workbench() {
           isFirstDisabled={isFirstDisabled}
           isLastDisabled={isLastDisabled}
           onExport={handleExportClick}
+          onFlip={() => dispatch({ type: 'TOGGLE_BOARD_ORIENTATION' })}
         />
       </div>
     </div>
