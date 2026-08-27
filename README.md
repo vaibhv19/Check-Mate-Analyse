@@ -14,6 +14,14 @@ Check-Mate-Analyse is a premium, local-first chess analysis workbench designed t
 
 ---
 
+## Related Writing
+
+* [Local Intelligence](https://vaibhav19.vercel.app/writing/local-first-ai-why-i-kept-the-intelligence-close-to-the-application)
+* [From Coursework to Systems](https://vaibhav19.vercel.app/writing/from-coursework-to-systems-engineering-how-my-projects-became-more-serious)
+* [ENGINEERING JOURNEY](https://vaibhav19.vercel.app/writing/engineering-journey)
+
+---
+
 ## 📷 Screenshots
 
 ### 1. Landing & PGN Import Form

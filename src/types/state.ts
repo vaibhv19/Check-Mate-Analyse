@@ -64,4 +64,7 @@ export interface WorkbenchState {
   isSandbox: boolean;
   sandboxMoves: MoveEntry[]; // moves played in sandbox mode
   sandboxActiveIndex: number; // active index within sandboxMoves (-1 if back at the branch start)
+  
+  // UI preferences
+  boardOrientation: 'white' | 'black';
 }
