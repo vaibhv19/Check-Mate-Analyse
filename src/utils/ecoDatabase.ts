@@ -7,13 +7,13 @@ export interface OpeningInfo {
  * Normalizes a FEN string to only contain the piece placement and active player.
  * E.g., "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" -> "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w"
  */
-export function getNormalizedFen(fen: string): string {
+function getNormalizedFen(fen: string): string {
   const parts = fen.split(' ');
   if (parts.length < 2) return fen;
   return `${parts[0]} ${parts[1]}`;
 }
 
-export const ecoMap: Record<string, OpeningInfo> = {
+const ecoMap: Record<string, OpeningInfo> = {
   // 1. e4
   'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b': { eco: 'B00', name: "King's Pawn Game" },
   

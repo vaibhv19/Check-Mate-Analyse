@@ -8,12 +8,10 @@ export interface StockfishOutput {
   lines?: EngineLine[];
 }
 
-export type StockfishMessageCallback = (msg: string) => void;
 export type StockfishEvaluationCallback = (evaluation: StockfishOutput) => void;
 
 export class StockfishClient {
   private worker: Worker | null = null;
-  private messageListeners: StockfishMessageCallback[] = [];
   private evalListeners: StockfishEvaluationCallback[] = [];
   private currentLines: EngineLine[] = [];
 
@@ -73,17 +71,6 @@ export class StockfishClient {
   }
 
   /**
-   * Registers a listener for raw UCI output text lines.
-   * Returns a cleanup function.
-   */
-  public addMessageListener(callback: StockfishMessageCallback): () => void {
-    this.messageListeners.push(callback);
-    return () => {
-      this.messageListeners = this.messageListeners.filter(l => l !== callback);
-    };
-  }
-
-  /**
    * Registers a listener for parsed Stockfish evaluations.
    * Returns a cleanup function.
    */
@@ -98,9 +85,6 @@ export class StockfishClient {
    * Dispatches incoming UCI messages to listeners and triggers parsing.
    */
   private handleMessage(msg: string): void {
-    // Distribute raw message lines to listeners
-    this.messageListeners.forEach(listener => listener(msg));
-
     // Parse UCI info lines
     if (msg.startsWith('info ') && msg.includes('score')) {
       const parsed = parseUciInfoLine(msg, this.currentLines);
@@ -119,3 +103,4 @@ export class StockfishClient {
     }
   }
 }
+

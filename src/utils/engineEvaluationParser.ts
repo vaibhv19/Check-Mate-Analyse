@@ -1,4 +1,4 @@
-import type { MoveEvaluation, EngineLine } from '../types/state';
+import type { EngineLine } from '../types/state';
 
 /**
  * Parses a standard UCI 'info' line and updates the active EngineLine set.
@@ -65,27 +65,5 @@ export function parseUciInfoLine(
     depth,
     nps,
     updatedLines: updatedLines.filter(Boolean),
-  };
-}
-
-/**
- * Builds a final MoveEvaluation object once Stockfish reports the best move.
- */
-export function finalizeMoveEvaluation(
-  lines: EngineLine[],
-  bestMove: string,
-  depth: number
-): MoveEvaluation | null {
-  if (lines.length === 0) return null;
-
-  const primaryLine = lines[0];
-
-  return {
-    score: primaryLine.score,
-    isMate: primaryLine.isMate,
-    mateIn: primaryLine.mateIn,
-    bestMove,
-    lines,
-    depth,
   };
 }

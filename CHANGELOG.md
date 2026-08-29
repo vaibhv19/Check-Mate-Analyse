@@ -25,7 +25,6 @@ This release focuses on auditing, upgrading, and expanding all project architect
 * **Release Tooling:**
   * `.github/ISSUE_TEMPLATE/bug_report.md` — Standardized bug reporting.
   * `.github/ISSUE_TEMPLATE/feature_request.md` — Standardized feature request templates.
-  * `Docs/RELEASE_NOTES_v1.0.1.md` — Release announcement notes.
 
 ### Changed
 * **Upgraded Core Documents:**
