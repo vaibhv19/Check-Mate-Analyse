@@ -10,7 +10,7 @@
 
 Check-Mate-Analyse is a premium, local-first chess analysis workbench designed to treat chess games like source code: **the PGN is the program, the engine is the compiler/linter, and the user's goal is to debug their tactical mistakes.** By eliminating account walls, subscriptions, and remote server latency, Check-Mate-Analyse provides instant, private chess analysis executed entirely inside the client's browser.
 
-🚀 **Live Workbench**: [check-mate-analyse.vercel.app](https://check-mate-analyse.vercel.app/)
+🚀 **Live Workbench**: [check-mate-analyse.vercel.app](https://checkmate.vaibhv19.dev/)
 
 ---
 
